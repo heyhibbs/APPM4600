@@ -36,3 +36,5 @@ bisection(f, 0, 2, 1e-5, 100)
 #2c
 f = lambda x: np.sin(x)
 bisection(f, 0,0.1, 1e-5, 100)
+
+bisection(f, 0.5, 3*np.pi/4,1e-5,100)
