@@ -20,8 +20,10 @@ matplotlib.rcParams['figure.dpi'] = 300
 
 #Pre-Lab
 h = 0.01*2.0**(-np.arange(0,10))
-fforward = (np.cos((np.pi/2)+h)-np.cos(np.pi/2))/h
-fcentered = (np.cos((np.pi/2)+h)-np.cos((np.pi/2)-h))/(2*h)
+f = lambda x: np.cos(x)
+fforward = (f((np.pi/2)+h)-f(np.pi/2))/h
+
+fcentered = (f((np.pi/2)+h)-f((np.pi/2)-h))/(2*h)
 
 fprime = -np.sin(np.pi/2)
 
@@ -60,44 +62,105 @@ def evalJ(x):
                   [1-np.cos(x[0]-x[1]), 1+np.cos(x[0]-x[1])]])
     return J
 
+def Newton(x0,tol,Nmax):
 
-def SlackerNewton(x0,tol,Nmax):
+    ''' inputs: x0 = initial guess, tol = tolerance, Nmax = max its'''
+    ''' Outputs: xstar= approx root, ier = error message, its = num its'''
+    xlist = np.zeros((Nmax+1,len(x0)));
+    xlist[0] = x0;
+
+    for its in range(Nmax):
+       J = evalJ(x0);
+       F = evalF(x0);
+
+       x1 = x0 - np.linalg.solve(J,F);
+       xlist[its+1]=x1;
+
+       if (norm(x1-x0) < tol*norm(x0)):
+           xstar = x1
+           ier =0
+           return[xstar, xlist,ier, its];
+
+       x0 = x1
+
+    xstar = x1
+    ier = 1
+    return[xstar,xlist,ier,its];
+
+
+def LeaSlackerNewton(x0,tol,Nmax):
 
     ''' Slacker Newton = recompute the Jacobian given a condition: Here we will use every 3 iterations '''
     ''' inputs: x0 = initial guess, tol = tolerance, Nmax = max its'''
     ''' Outputs: xstar= approx root, ier = error message, its = num its'''
 
-    J = evalJ(x0)
-    Jinv = inv(J)
+    xlist = np.zeros((Nmax+1,len(x0)));
+    xlist[0] = x0;
+
+    J = evalJ(x0);
     for its in range(Nmax):
-        
-       F = evalF(x0)
-       x1 = x0 - Jinv.dot(F)
-       
-       if (its-1)%3 == 0:
-           J = evalJ(x1)
-           Jinv = inv(J)
-           F = evalF(x1)
-      
-       if (norm(x1-x0) < tol):
-           xstar = x1
-           ier =0
-           return[xstar, ier,its]
-           
-       x0 = x1
-    
+        if ((its+1)%3 == 0):
+            J = evalJ(x0)
+            
+        F = evalF(x0)
+        x1 = x0 - np.linalg.solve(J,F)
+        xlist[its+1]=x1;
+
+        if (norm(x1-x0) < tol*norm(x0)):
+            xstar = x1
+            ier =0
+            return[xstar,xlist, ier,its]
+
+        x0 = x1
     xstar = x1
     ier = 1
-    return[xstar,ier,its]   
+    return[xstar,xlist,ier,its];
+
+
+def LazyNewton(x0,tol,Nmax):
+
+    ''' Lazy Newton = use only the inverse of the Jacobian for initial guess'''
+    ''' inputs: x0 = initial guess, tol = tolerance, Nmax = max its'''
+    ''' Outputs: xstar= approx root, ier = error message, its = num its'''
+
+    xlist = np.zeros((Nmax+1,len(x0)));
+    xlist[0] = x0;
+
+    J = evalJ(x0);
+    for its in range(Nmax):
+
+       F = evalF(x0)
+       x1 = x0 - np.linalg.solve(J,F);
+       xlist[its+1]=x1;
+
+       if (norm(x1-x0) < tol*norm(x0)):
+           xstar = x1
+           ier =0
+           return[xstar,xlist, ier,its];
+
+       x0 = x1
+
+    xstar = x1
+    ier = 1
+    return[xstar,xlist,ier,its];
+
 
 # use routines
-x0 = np.array([1,0])
+x0 = np.array([-1,0])
 
-Nmax = 100
+Nmax = 10
 tol = 1e-10
 
-t = time.time()
-for j in range(20):
-  [xstar,ier,its] =  SlackerNewton(x0,tol,Nmax)
-elapsed = time.time()-t
-print(xstar)
+[xstarNewton,xlistNewton, ierNewton,itsNewton] = Newton(x0, tol, Nmax)
+[xstarSlack,xlistSlack, ierSlack,itsSlack] =  LeaSlackerNewton(x0,tol,Nmax)
+[xstarLazy,xlistLazy, ierLazy,itsLazy] =  LazyNewton(x0,tol,Nmax)
+
+print('Newton xstar', xstarNewton)
+print('itsNewton', itsNewton)
+print('Slacker xstar',xstarSlack)
+print('itsSlack', itsSlack)
+print('Lazy xstar',xstarLazy)
+print('itsLazy', itsLazy)
+
+#3.3
+Japprox = np.array()
