@@ -52,14 +52,14 @@ def evalF(x):
 
     F = np.zeros(2)
     
-    F[0] = 4*x[0]**2+x[1]**2-4
-    F[1] = x[0]+x[1] - np.sin(x[0]-x[1])
+    F[0] = (x[0]-1)**2 + x[1]**2-1
+    F[1] = (x[0]-2)**2 + (x[1]-1)**2-1
     return F
     
 def evalJ(x): 
 
-    J = np.array([[8*x[0], 2*x[1]], 
-                  [1-np.cos(x[0]-x[1]), 1+np.cos(x[0]-x[1])]])
+    J = np.array([[2*(x[0]-1), 2*x[1]], 
+                  [2*(x[0]-2), 2*(x[1]-1)]])
     return J
 
 def Newton(x0,tol,Nmax):
@@ -146,7 +146,7 @@ def LazyNewton(x0,tol,Nmax):
 
 
 # use routines
-x0 = np.array([-1,0])
+x0 = np.array([1,2])
 
 Nmax = 10
 tol = 1e-10
@@ -162,5 +162,3 @@ print('itsSlack', itsSlack)
 print('Lazy xstar',xstarLazy)
 print('itsLazy', itsLazy)
 
-#3.3
-Japprox = np.array()
