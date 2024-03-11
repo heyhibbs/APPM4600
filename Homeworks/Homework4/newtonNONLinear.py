@@ -126,7 +126,7 @@ def Broyden(x0,tol,Nmax):
     return[alpha,ier,its]
 
 
-
+'''
 # use routines
 x0 = np.array([1.0, -1.0])
 
@@ -160,3 +160,4 @@ print('Broyden: the error message reads:',ier)
 print('Broyden: took this many seconds:',elapsed/20)
 print('Broyden: number of iterations is:',its)
      
+'''
