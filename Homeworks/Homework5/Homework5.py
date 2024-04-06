@@ -82,3 +82,6 @@ def driver():
 driver()
 
 #4
+M = np.array([1, 1,1,1])
+y = np.array([1,4,2,6])
+W = np.zeros([4,4])
