@@ -6,6 +6,11 @@ Created on Mon Apr  1 19:44:09 2024
 """
 import numpy as np
 import scipy as sc
+from scipy.integrate import quad
+import matplotlib
+
+matplotlib.rcParams['savefig.dpi'] = 300
+matplotlib.rcParams['figure.dpi'] = 300
 
 #Prelab
 def eval_legendre(n,x):
@@ -22,4 +27,6 @@ def eval_legendre(n,x):
         p = phi[0:n+1]
     return p
 p = eval_legendre(4,2)
-print(p)
+
+
+

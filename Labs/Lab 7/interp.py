@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 def driver():
 
 
-    f = lambda x: 1/(1+(10*x)**2)
+    f = lambda x: 1/(1+(16*x)**2)
 
-    N = 17
+    N = 16
     ''' interval'''
     a = -1
     b = 1
@@ -15,6 +15,9 @@ def driver():
    
     ''' create equispaced interpolation nodes'''
     xint = np.linspace(a,b,N+1)
+    xint_chebyshev = np.zeros(N+1)
+    for i in range(0,N+1):
+        xint_chebyshev[i] = np.cos((2*i+1)*np.pi/(2*(N+1)))
     
     ''' create interpolation data'''
     yint = f(xint)
@@ -23,7 +26,8 @@ def driver():
     Neval = 1000
     xeval = np.linspace(a,b,Neval+1)
     yeval_l= np.zeros(Neval+1)
-    yeval_dd = np.zeros(Neval+1)
+    yeval_l_cheb = np.zeros(Neval+1)
+    #yeval_dd = np.zeros(Neval+1)
   
     '''Initialize and populate the first columns of the 
      divided difference matrix. We will pass the x vector'''
@@ -35,8 +39,9 @@ def driver():
     y = dividedDiffTable(xint, y, N+1)
     ''' evaluate lagrange poly '''
     for kk in range(Neval+1):
-       yeval_l[kk] = eval_lagrange(xeval[kk],xint,yint,N)
-       yeval_dd[kk] = evalDDpoly(xeval[kk],xint,y,N)
+       yeval_l_cheb[kk] = eval_lagrange(xeval[kk],xint_chebyshev,yint,N)
+       yeval_l[kk]= eval_lagrange(xeval[kk],xint,yint,N)
+       #yeval_dd[kk] = evalDDpoly(xeval[kk],xint,y,N)
           
 
     
@@ -44,19 +49,23 @@ def driver():
 
     ''' create vector with exact values'''
     fex = f(xeval)
-       
 
     plt.figure()    
     plt.plot(xeval,fex,'ro-')
     plt.plot(xeval,yeval_l,'bs--') 
-    plt.plot(xeval,yeval_dd,'c.--')
+    plt.title('N=16')
+    #plt.plot(xeval,yeval_dd,'c.--')
     plt.legend()
 
     plt.figure() 
+    err_l_cheb = abs(yeval_l_cheb - fex)
     err_l = abs(yeval_l-fex)
-    err_dd = abs(yeval_dd-fex)
+    print(max(err_l))
+    #err_dd = abs(yeval_dd-fex)
+    plt.title('N=16')
     plt.semilogy(xeval,err_l,'ro--',label='lagrange')
-    plt.semilogy(xeval,err_dd,'bs--',label='Newton DD')
+    plt.semilogy(xeval,err_l_cheb,'bo--',label='lagrange-chebyshev')
+    #plt.semilogy(xeval,err_dd,'bs--',label='Newton DD')
     plt.legend()
     plt.show()
 
@@ -103,4 +112,4 @@ def evalDDpoly(xval, xint,y,N):
 
     return yeval
 
-      
+driver()     
