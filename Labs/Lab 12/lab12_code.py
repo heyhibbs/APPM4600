@@ -55,8 +55,10 @@ def driver():
      M = 5
      A = create_rect(N,M)     
      b = np.random.rand(N,1)
-
-
+     
+     B = create_rect(N,M)
+     Q,R = la.qr(B)
+     la.qr()
      
 def create_rect(N,M):
      ''' this subroutine creates an ill-conditioned rectangular matrix'''
@@ -79,7 +81,8 @@ def create_rect(N,M):
      B = np.matmul(B,Q2)
      return B     
           
-  
+    
+
 if __name__ == '__main__':
       # run the drivers only if this is called from the command line
       driver()       
