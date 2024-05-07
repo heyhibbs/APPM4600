@@ -8,6 +8,8 @@ Created on Mon Apr 22 15:06:50 2024
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate
+from scipy.special import gamma
+import math
 
 #2a
 a = -5
@@ -81,5 +83,29 @@ sp_default, sp_def_err, sp_def_out = scipy.integrate.quad(f,a,b, epsabs = 10**(-
 sp_104, sp_1014_err, sp_104_out = scipy.integrate.quad(f,a,b, epsabs = 10**(-4),full_output=True)
 neval_def = sp_def_out['neval']
 neval_104 = sp_104_out['neval']
+print('Scipy quad with default tolerance evaluates to', sp_default)
+print('Scipy quad with TOL < 10^-4 evaluates to', sp_104)
 print('The number of evaluations for TOL = 10^-6 is', neval_def)
 print('The number of evaluations for TOL = 10^-4 is', neval_104)
+
+#4a
+def trap_gamma(t):
+    b = 5*t
+    x = np.linspace(0,b)
+    f = lambda x: x**(t-1.)*np.exp(-x)
+    n = 175*t
+    return trapquad(0,b,f,n)
+
+for i in range(1,6):    
+    print('Integral with trapezoidal method, t =', i*2, ':', trap_gamma(2*i))
+
+for i in range(1,6): 
+    print('Integral with scipy, t =', i*2, ':', gamma(2*i))
+
+
+f = lambda x: x**(4-1.)
+[x,w] = np.polynomial.laguerre.laggauss(3) #t=2
+gammaGL = sum(f(x)*w)
+print('Gauss-Laguerre evaluates to:', gammaGL)
+print((gammaGL-gamma(4))/gamma(4))
+    
